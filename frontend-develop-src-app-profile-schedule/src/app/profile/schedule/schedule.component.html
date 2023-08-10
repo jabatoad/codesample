@@ -1,0 +1,62 @@
+<profile-header/>
+<div class="cabinet-body">
+  <div class="container-large">
+    <div class="schedule-page cabinet-page-grid">
+      <div class="cabinet-page-sidebar">
+        <!--========== календарь ==============-->
+        <div class="sidebar-calendar">
+          <mat-calendar class="mat-calendar"
+                        (selectedChange)="pickDate($event)"
+                        [selected]="selectedDate$ | async"
+                        #calendar
+          />
+          <button class="btn-32 btn--primary w-100 mt-16" (click)="todayDate()">Сегодня</button>
+        </div>
+        <!--========== выпадашки ==============-->
+        <div class="sidebar-filters" [formGroup]="filtersForm">
+          <div class="mb-8">
+            <app-select-menu
+              *ngIf="getSpecialities() | async as specialities"
+              [elements]="specialities"
+              (onSelect)="pickSpeciality($event)"
+              formControlName="specialityControl"
+              key="name"
+              placeholder="Специальность"
+            />
+          </div>
+          <app-select-menu
+            *ngIf="masters$ | async as masters"
+            [elements]="masters"
+            (onSelect)="pickMaster($event)"
+            formControlName="masterControl"
+            key="name"
+            placeholder="Мастер"
+          />
+          <button (click)="resetFilters()" class="btn-32 btn--orange w-100 mt-16">Сбросить фильтры</button>
+        </div>
+        <!--========== цветные маркеры ==============-->
+        <div class="sidebar-markers">
+          <div *ngFor="let status of statuses$ | async" class="marker-color" [ngClass]="status.className" [title]="status.className">{{(appointments$ | async | filterByStatus: status).length}}</div>
+        </div>
+      </div>
+      <div class="schedule-page__table minified">
+        <div class="schedule__table-header flex-vertical-center flex-between">
+          <div class="icon-btn arrow-left" (click)="previousDay()"></div>
+          <!--          {{selectedDate.toDate() | date: 'd MMMM'}}-->
+<!--          Todo: display current week for a single master-->
+          <div class="schedule__table-header-center">{{(selectedDate$ | async)?.format('DD MMM')}}</div>
+          <div class="icon-btn arrow-right" (click)="nextDay()"></div>
+        </div>
+        <schedule-table
+          [masters]="masters$"
+          [appointments]="appointments$"
+          [selectedDate]="selectedDate$"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+
+<schedule-create-appointment></schedule-create-appointment>
+<schedule-create-break></schedule-create-break>
+<schedule-appointment-details *ngIf="appointmentDetailsOpen$ | async"></schedule-appointment-details>

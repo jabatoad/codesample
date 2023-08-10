@@ -1,0 +1,19 @@
+<div
+  class="schedule-table-col"
+  [attr.data-master]="master.id"
+>
+  <ng-container *ngIf="appointments$ | async as appointments">
+    <schedule-cell
+      *ngFor="let time of maxUnion | excludeTaken: (appointments | filterByMaster: master.id)"
+      [time]="time"
+      [masterID]="master.id"
+      [appointment]="appointments$ | filterByMasterAndTime$: {time, masterID: master.id}"
+      tableCell
+      cdkDropList
+      [cdkDropListData]="{time}"
+      [$appointment]="appointments | filterByMasterAndTime: {time, masterID: master.id}"
+      [$time]="time"
+      [$masterID]="master.id"
+    />
+  </ng-container>
+</div>

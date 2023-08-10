@@ -1,0 +1,25 @@
+.schedule {
+  &-table {
+    display: flex;
+  }
+}
+.table {
+  &-wrapper {
+    width: fit-content;
+  }
+}
+.table-wrapper {
+  .time-column {
+    &-header {
+      font-size: 16px !important;
+      width: 52.84px;
+    }
+    &-cell {
+      border-right: 1px solid #e6e6e6;
+    }
+  }
+}
+
+schedule-cell {
+  display: inline-grid;
+}

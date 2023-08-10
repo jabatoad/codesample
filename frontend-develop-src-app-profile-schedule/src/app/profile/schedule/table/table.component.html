@@ -1,0 +1,43 @@
+<div class="table-wrapper" *ngIf="maxUnion$ | async as maxUnion">
+  <div class="cabinet-table-block">
+    <div class="cabinet-table-header">
+      <div class="time-column-header">
+        <span>Шаг</span>
+      </div>
+      <ng-container *ngIf="!(currentMaster$ | async)?.id; else singleMasterRow">
+        <div class="cell" *ngFor="let master of (masters$ | async)! | filterBySpeciality: (currentSpeciality$ | async) | filterMasterByID: (currentMaster$ | async)?.id">
+          <a>{{master.name.split(' ')[0]}}</a>
+          <div class="pause-icon__wrapper" frame-btn="pause-info">
+            <div *ngIf="selectedDate$ | async as selectedDate" (click)="addBreak(master, selectedDate, $event)" class="pause-icon"
+                 title="добавить перерыв"></div>
+          </div>
+        </div>
+      </ng-container>
+      <ng-template #singleMasterRow>
+        <div class="cell" *ngFor="let date of currentWeek">
+          <a>{{date.format('ddd, D')}}</a>
+          <div class="pause-icon__wrapper" frame-btn="pause-info" *ngIf="masters$ | async as masters">
+            <div *ngIf="selectedDate$ | async as selectedDate" (click)="addBreak(masters[0], selectedDate, $event)" class="pause-icon"
+                 title="добавить перерыв">
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </div>
+    <div class="schedule-scrollbar-block" (scroll)="onScroll($event)" #table>
+      <table class="schedule-table" cdkDropListGroup>
+        <div class="schedule-table-time-column pb-24" #timeColumn>
+          <div class="time-column-cell" *ngFor="let time of maxUnion">{{time.format('H:mm')}}</div>
+        </div>
+        <ng-container *ngIf="!(currentMaster$ | async)?.id; else singleMasterCols">
+          <schedule-column *ngFor="let master of (masters$ | async)! | filterBySpeciality: (currentSpeciality$ | async) | filterMasterByID: (currentMaster$ | async)?.id" [maxUnion]="maxUnion" [master]="master" [appointments]="appointments$ | filterByMaster$: master.id"/>
+        </ng-container>
+        <ng-template #singleMasterCols>
+          <ng-container *ngIf="currentMaster$ | async as master">
+            <schedule-column *ngFor="let date of currentWeek" [maxUnion]="maxUnion" [master]="master" [appointments]="appointments$ | filterByMaster$: master.id | filterByDate$: date"/>
+          </ng-container>
+        </ng-template>
+      </table>
+    </div>
+  </div>
+</div>

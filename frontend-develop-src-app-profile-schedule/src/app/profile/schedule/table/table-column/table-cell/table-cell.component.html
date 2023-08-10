@@ -1,0 +1,31 @@
+<div
+  *ngIf="!(appointment$ | async); else appointmentIsTrue"
+  class="schedule-table-cell"
+  [attr.data-time]="time"
+  [attr.data-master]="masterID"
+>
+</div>
+<ng-template #appointmentIsTrue>
+  <div
+    class="schedule-table-cell appointment"
+    *ngIf="appointment$ | async as appointment"
+    [attr.data-time]="time"
+    [attr.data-master]="masterID"
+    [attr.data-appointment]="appointment.id"
+    [ngClass]="appointment.status.className"
+    [ngStyle]="{height: 48 * (appointment.endTime.diff(appointment.startTime, 'minute') / (tablePace$ | async)!) + 'px'}"
+    cdkDrag
+    cdkDragLockAxis="y"
+    (cdkDragDropped)="onDrag($event)"
+    [cdkDragData]="{appointment}"
+    (cdkDragEnded)="onDrop($event)"
+  >
+    <div>
+      <p>{{(client$ | async)?.name}}</p>
+      <span>{{appointment.startTime.format('HH:mm')}} -
+        {{appointment.endTime.format('HH:mm')}}</span>
+    </div>
+  </div>
+</ng-template>
+
+<!--[attr.data-status]="(getAppointmentByTime(time!, masterID!) | async)?.status"-->
